@@ -135,11 +135,11 @@ describe Synapse::EC2Watcher do
         # done remotely; breaking into separate calls would result in
         # unnecessary data being retrieved.
 
-        subject.ec2.should_receive(:instances).and_return(instance_collection)
+        expect(subject.ec2).to receive(:instances).and_return(instance_collection)
 
-        instance_collection.should_receive(:tagged).with('foo').and_return(instance_collection)
-        instance_collection.should_receive(:tagged_values).with('bar').and_return(instance_collection)
-        instance_collection.should_receive(:select).and_return(instance_collection)
+        expect(instance_collection).to receive(:tagged).with('foo').and_return(instance_collection)
+        expect(instance_collection).to receive(:tagged_values).with('bar').and_return(instance_collection)
+        expect(instance_collection).to receive(:select).and_return(instance_collection)
 
         subject.send(:instances_with_tags, 'foo', 'bar')
       end
@@ -147,27 +147,25 @@ describe Synapse::EC2Watcher do
 
     context 'returned backend data structure' do
       before do
-        subject.stub(:instances_with_tags).and_return([instance1, instance2])
+        expect(subject).to receive(:instances_with_tags).and_return([instance1, instance2])
       end
 
       let(:backends) { subject.send(:discover_instances) }
 
       it 'returns an Array of backend name/host/port Hashes' do
 
-        expect { backends.all? {|b| %w[name host port].each {|k| b.has_key?(k) }} }.to be_true
+        expect(backends.all? {|b| %w[name host port].each {|k| b.has_key?(k) }}).to eql(true)
       end
 
       it 'sets the backend port to server_port_override for all backends' do
         backends = subject.send(:discover_instances)
-        expect {
-          backends.all? { |b| b['port'] == basic_config['haproxy']['server_port_override'] }
-        }.to be_true
+        expect(backends.all? { |b| b['port'] == basic_config['haproxy']['server_port_override'] }).to eql(true)
       end
     end
 
     context 'returned instance fields' do
       before do
-        subject.stub(:instances_with_tags).and_return([instance1])
+        expect(subject).to receive(:instances_with_tags).and_return([instance1])
       end
 
       let(:backend) { subject.send(:discover_instances).pop }
