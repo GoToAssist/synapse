@@ -23,6 +23,10 @@ module Synapse
     def self.create(name, opts, synapse)
       opts['name'] = name
 
+      if opts.has_key?('discovery') && !opts['discovery'].has_key?('method')
+        opts['discovery']['method'] = 'etcd'
+      end
+
       raise ArgumentError, "Missing discovery method when trying to create watcher" \
         unless opts.has_key?('discovery') && opts['discovery'].has_key?('method')
 

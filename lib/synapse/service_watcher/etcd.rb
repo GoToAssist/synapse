@@ -36,6 +36,22 @@ module Synapse
 
     private
     def validate_discovery_opts
+      unless @discovery['port']
+        if ENV['ETCD_PORT']
+          @discovery['port'] = ENV['ETCD_PORT']
+        else
+          @discovery['port'] = 4001
+        end
+      end
+
+      unless @discovery['host']
+        if ENV['ETCD_HOST']
+          @discovery['host'] = ENV['ETCD_HOST']
+        else
+          @discovery['host'] = "127.0.0.1"
+        end
+      end
+
       raise ArgumentError, "invalid discovery method #{@discovery['method']}" \
         unless @discovery['method'] == 'etcd'
       raise ArgumentError, "missing or invalid etcd host for service #{@name}" \
