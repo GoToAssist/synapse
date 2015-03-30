@@ -81,7 +81,7 @@ module Synapse
         numeric_id = node.key.split('/').last
         numeric_id = NUMBERS_RE =~ numeric_id ? numeric_id.to_i : nil
 
-        log.warn "synapse: discovered backend #{name} at #{host}:#{server_port} for service #{@name}"
+        #log.warn "synapse: discovered backend #{name} at #{host}:#{server_port} for service #{@name}"
         { 'name' => name, 'host' => host, 'port' => server_port, 'id' => numeric_id}
       end
     end
@@ -103,12 +103,13 @@ module Synapse
 
     # find the current backends at the discovery path; sets @backends
     def discover
-      log.info "synapse: discovering backends for service #{@name}"
+      #log.info "synapse: discovering backends for service #{@name}"
 
       d = nil
       begin
         d = @etcd.get(@discovery['path'])
       rescue Etcd::KeyNotFound
+        log.warn "ETCD key not found #{@discovery['path']}"
         create(@discovery['path'])
         d = @etcd.get(@discovery['path'])
       end
@@ -130,15 +131,19 @@ module Synapse
           true
         end
       else
-        if @backends != new_backends
+        if !compare_backends(@backends, new_backends)
           log.info "synapse: discovered #{new_backends.length} backends (including new) for service #{@name}"
           @backends = new_backends
           true
         else
-          log.info "synapse: discovered #{new_backends.length} backends for service #{@name}"
+          #log.info "synapse: discovered #{new_backends.length} backends for service #{@name}"
           false
         end
       end
+    end
+
+    def compare_backends(backends, new_backends)
+      backends.sort{|a,b|a.hash <=>b.hash} == new_backends.sort{|a,b|a.hash <=>b.hash}
     end
 
     def watch
