@@ -1,0 +1,59 @@
+{
+  "services": {
+    "kafka": {
+      "discovery": {
+        "path": "/g2a/services/kafka"
+      },
+      "haproxy": {
+        "port": 9092
+      }
+    },
+    "zookeeper": {
+      "discovery": {
+        "path": "/g2a/services/zookeeper"
+      },
+      "haproxy": {
+        "port": 2181
+      }
+    },
+    "beetil": {
+      "discovery": {
+        "path": "/g2a/services/beetil"
+      },
+      "haproxy": {
+        "port": 8001
+      }
+    }
+  },
+  "haproxy": {
+    "reload_command": "script/haproxy.sh reload",
+    "config_file_path": "/opt/boxen/homebrew/etc/haproxy/haproxy.cfg",
+    "socket_file_path": "/opt/boxen/homebrew/var/haproxy/stats.sock",
+    "do_writes": true,
+    "do_reloads": true,
+    "do_socket": false,
+    "global": [
+      "daemon",
+      "maxconn 4096",
+    ],
+    "defaults": [
+      "log      global",
+      "option   dontlognull",
+      "maxconn  2000",
+      "retries  3",
+      "timeout  connect 5s",
+      "timeout  client  1m",
+      "timeout  server  1m",
+      "option   redispatch",
+      "balance  roundrobin"
+    ],
+    "extra_sections": {
+      "listen stats :3212": [
+        "mode http",
+        "stats enable",
+        "stats uri /",
+        "stats refresh 5s"
+      ]
+    }
+  }
+}
