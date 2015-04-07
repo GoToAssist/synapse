@@ -115,6 +115,10 @@ Vagrant.configure("2") do |config|
       ip = "172.17.8.#{i+100}"
       config.vm.network :private_network, ip: ip
 
+      if i == 1
+        config.vm.network "forwarded_port", guest: 4001, host: 4001
+      end
+
       # Uncomment below to enable NFS for sharing the host machine into the coreos-vagrant VM.
       config.vm.synced_folder ".", "/home/core/share", id: "core", :nfs => true, :mount_options => ['nolock,vers=3,udp']
       $shared_folders.each_with_index do |(host_folder, guest_folder), index|
