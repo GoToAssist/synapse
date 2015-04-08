@@ -1,10 +1,10 @@
 #!/bin/bash
 
-case "$1" in
-    'start')
-        haproxy -f /opt/boxen/homebrew/etc/haproxy/haproxy.cfg -p /opt/boxen/homebrew/var/run/haproxy.pid
-    ;;
-    'reload')
-        haproxy -f /opt/boxen/homebrew/etc/haproxy/haproxy.cfg -p /opt/boxen/homebrew/var/run/haproxy.pid -sf $(cat /opt/boxen/homebrew/var/run/haproxy.pid)
-    ;;
-esac
+PID_FILE=/opt/boxen/data/haproxy/haproxy.pid
+CFG_FILE=/opt/boxen/config/haproxy/haproxy.cfg
+
+if [ -f $PID_FILE ]; then
+    haproxy -f $CFG_FILE -p $PID_FILE -sf $(cat $PID_FILE)
+else
+    haproxy -f $CFG_FILE -p $PID_FILE
+fi
