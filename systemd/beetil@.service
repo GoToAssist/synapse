@@ -1,0 +1,29 @@
+[Unit]
+Description=Beetil
+Requires=docker.service
+Requires=fleet.service
+Requires=etcd.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill beetil
+ExecStartPre=-/usr/bin/docker rm beetil
+ExecStartPre=/usr/bin/docker pull christianbak/beetil
+ExecStart=/usr/bin/docker run --name beetil -e ETCD_IP=${COREOS_PRIVATE_IPV4} -e EXT_IP=10.0.1.19 christianbak/beetil
+
+#Stop
+ExecStop=/usr/bin/docker stop beetil
+
+[X-Fleet]
+Conflicts=beetil@*.service

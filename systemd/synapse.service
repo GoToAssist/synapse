@@ -1,0 +1,30 @@
+[Unit]
+Description=Synapse
+After=docker.service
+Requires=docker.service
+#Requires=fleet.service
+#Requires=etcd.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill synapse
+ExecStartPre=-/usr/bin/docker rm synapse
+ExecStartPre=/usr/bin/docker pull christianbak/synapse
+ExecStart=/usr/bin/docker run --net host -e ETCD_IP=${COREOS_PRIVATE_IPV4} --name synapse christianbak/synapse
+
+# Stop
+ExecStop=/usr/bin/docker stop synapse
+
+[X-Fleet]
+Global=true

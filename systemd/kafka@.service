@@ -1,0 +1,30 @@
+[Unit]
+Description=Kafka
+After=docker.service
+#After=zookeeper.service
+Requires=docker.service
+#Requires=zookeeper.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill kafka
+ExecStartPre=-/usr/bin/docker rm kafka
+ExecStartPre=-/usr/bin/docker pull christianbak/kafka
+ExecStart=/usr/bin/docker run --name kafka -e KAFKA_BROKER_ID=%i -e ETCD_HOST=${COREOS_PUBLIC_IPV4} -e HOST_IP=${COREOS_PUBLIC_IPV4} -p 9092:9092 christianbak/kafka /run.sh
+
+#Stop
+ExecStop=/usr/bin/docker stop kafka
+
+[X-Fleet]
+Conflicts=kafka@*.service
