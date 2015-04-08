@@ -27,7 +27,7 @@
   },
   "haproxy": {
     "reload_command": "script/haproxy.sh reload",
-    "config_file_path": "/opt/boxen/config/haproxy.cfg",
+    "config_file_path": "/opt/boxen/config/haproxy/haproxy.cfg",
     "socket_file_path": "/opt/boxen/data/haproxy/stats.sock",
     "do_writes": true,
     "do_reloads": true,
