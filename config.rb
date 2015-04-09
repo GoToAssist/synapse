@@ -3,7 +3,7 @@ $new_discovery_url='https://discovery.etcd.io/new'
 # To automatically replace the discovery token on 'vagrant up', uncomment
 # the lines below:
 #
-if File.exists?('user-data') && ARGV[0].eql?('up')
+if File.exists?('user-data') && ARGV[0].eql?('destroy')
   require 'open-uri'
   require 'yaml'
  
