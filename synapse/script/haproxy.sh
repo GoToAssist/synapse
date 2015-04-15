@@ -1,7 +1,7 @@
 #!/bin/bash
 
-${HAPROXY_PID_FILE:=/opt/boxen/data/haproxy/haproxy.pid}
-${HAPROXY_CFG_FILE:=/opt/boxen/config/haproxy/haproxy.cfg}
+HAPROXY_PID_FILE = ${HAPROXY_PID_FILE:=/opt/boxen/data/haproxy/haproxy.pid}
+HAPROXY_CFG_FILE =${HAPROXY_CFG_FILE:=/opt/boxen/config/haproxy/haproxy.cfg}
 
 if [ -f $HAPROXY_PID_FILE ]; then
     haproxy -f $HAPROXY_CFG_FILE -p $HAPROXY_PID_FILE -sf $(cat $HAPROXY_PID_FILE)
