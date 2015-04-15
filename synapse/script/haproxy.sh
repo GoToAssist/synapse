@@ -1,10 +1,10 @@
 #!/bin/bash
 
-PID_FILE=/opt/boxen/data/haproxy/haproxy.pid
-CFG_FILE=/opt/boxen/config/haproxy/haproxy.cfg
+${HAPROXY_PID_FILE:=/opt/boxen/data/haproxy/haproxy.pid}
+${HAPROXY_CFG_FILE:=/opt/boxen/config/haproxy/haproxy.cfg}
 
 if [ -f $PID_FILE ]; then
-    haproxy -f $CFG_FILE -p $PID_FILE -sf $(cat $PID_FILE)
+    haproxy -f $HAPROXY_CFG_FILE -p $HAPROXY_PID_FILE -sf $(cat $HAPROXY_PID_FILE)
 else
-    haproxy -f $CFG_FILE -p $PID_FILE
+    haproxy -f $HAPROXY_CFG_FILE -p $HAPROXY_PID_FILE
 fi
