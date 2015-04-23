@@ -1,0 +1,28 @@
+[Unit]
+Description=MongoDB
+After=docker.service
+Requires=docker.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill mongodb
+ExecStartPre=-/usr/bin/docker rm mongodb
+ExecStartPre=-/usr/bin/docker pull christianbak/mongodb
+ExecStart=/usr/bin/docker run --name mongodb -e MONGO_INSTANCE=%i -e ETCD_HOST=${COREOS_PUBLIC_IPV4} -e HOST_IP=${COREOS_PUBLIC_IPV4} -p 27017:27017 -p 28017:28017 christianbak/mongodb /run.sh
+
+#Stop
+ExecStop=/usr/bin/docker stop mongodb
+
+[X-Fleet]
+Conflicts=mongodb@*.service
